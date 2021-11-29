@@ -310,6 +310,7 @@ int main(int argc, char **argv)
             LOG_E("trying to export an empty image");
             ret = -1;
         } else {
+            printf("KEK\n");
             ret = goxel_export_to_file(args.export, NULL);
         }
         goto end;

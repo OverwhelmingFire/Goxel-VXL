@@ -38,10 +38,14 @@ static void import_menu_callback(void *user, const file_format_t *f)
         goxel_import_file(NULL, f->name);
 }
 
+int gui_error_popup(void *data);
+
 static void export_menu_callback(void *user, const file_format_t *f)
 {
-    if (gui_menu_item(0, f->name, true))
-        goxel_export_to_file(NULL, f->name);
+    if (gui_menu_item(0, f->name, true)) {
+        int err = goxel_export_to_file(NULL, f->name);
+        if (err > 0) gui_open_popup("Error", 0, strdup(ERR_DESCRIPTION[err]), gui_error_popup); // Why strdup() is needed????
+    }
 }
 
 void gui_menu(void)

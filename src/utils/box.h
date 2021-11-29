@@ -20,6 +20,7 @@
 #define BOX_H
 
 #include "utils/vec.h"
+#include "stdio.h"
 
 #include <assert.h>
 
@@ -70,6 +71,7 @@ static inline void bbox_from_aabb(float box[4][4], const int aabb[2][3])
     const float size[3] = {(float)(aabb[1][0] - aabb[0][0]),
                            (float)(aabb[1][1] - aabb[0][1]),
                            (float)(aabb[1][2] - aabb[0][2])};
+    //printf("[[%f %f %f]]\n", pos[0], pos[1], pos[2]);
     bbox_from_extents(box, pos, size[0] / 2, size[1] / 2, size[2] / 2);
 }
 

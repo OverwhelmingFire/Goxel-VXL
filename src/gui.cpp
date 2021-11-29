@@ -16,6 +16,8 @@
  * goxel.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "stdio.h"
+
 #ifndef GUI_HAS_MENU
 #   define GUI_HAS_MENU 1
 #endif
@@ -899,6 +901,8 @@ bool gui_bbox(float box[4][4])
     ret |= gui_input_int("h", &h, 1, 2048);
     ret |= gui_input_int("d", &d, 1, 2048);
     gui_group_end();
+    
+    //printf("%d %d %d\n", x, y, z);
 
     if (ret) {
         vec3_set(p, x + w / 2., y + h / 2., z + d / 2.);

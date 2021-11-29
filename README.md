@@ -1,10 +1,10 @@
 
-Goxel
+The father project: Goxel
 =====
 
 Version 0.10.7
 
-By Guillaume Chereau <guillaume@noctua-software.com>
+Code by Guillaume Chereau <guillaume@noctua-software.com>
 
 [![Build Status](
     https://travis-ci.org/guillaumechereau/goxel.svg?branch=master)](
@@ -40,9 +40,7 @@ Fisherman house, made with Goxel by
 Licence
 -------
 
-Goxel is released under the GNU GPL3 licence.  If you want to use the code
-with a commercial project please contact me: I am willing to provide a
-version of the code under a commercial license.
+Goxel is released under the GNU GPL3 licence.
 
 
 Features
@@ -56,6 +54,7 @@ Features
 - Procedural rendering.
 - Export to obj, pyl, png, magica voxel, qubicle.
 - Ray tracing.
+- Export to .vxl file format, which makes it suitable to create maps for Ace of Spades.
 
 
 Usage

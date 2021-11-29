@@ -43,7 +43,7 @@ static void swap_color(uint32_t v, uint8_t ret[4])
     ret[0] = o[2];
     ret[1] = o[1];
     ret[2] = o[0];
-    ret[3] = o[3];
+    ret[3] = 255;//o[3];
 }
 
 static int vxl_import(image_t *image, const char *path)
@@ -84,6 +84,7 @@ static int vxl_import(image_t *image, const char *path)
             number_4byte_chunks = v[0];
             top_color_start = v[1];
             top_color_end = v[2];
+            //if (top_color_start == 62) printf("(%d %d %d)", x, y, top_color_end);
 
             for (i = z; i < top_color_start; i++)
                 cube[AT(x, y, i)][3] = 0;
@@ -129,114 +130,156 @@ static int vxl_import(image_t *image, const char *path)
     return ret;
 }
 
+
 static int is_surface(int x, int y, int z, uint8_t map[512][512][64])
 {
-   if (map[x][y][z]==0) return 0;
-   if (x == 0 || x == 511) return 1;
-   if (y == 0 || y == 511) return 1;
-   if (z == 0 || z == 63) return 1;
-   if (x   >   0 && map[x-1][y][z]==0) return 1;
-   if (x+1 < 512 && map[x+1][y][z]==0) return 1;
-   if (y   >   0 && map[x][y-1][z]==0) return 1;
-   if (y+1 < 512 && map[x][y+1][z]==0) return 1;
-   if (z   >   0 && map[x][y][z-1]==0) return 1;
-   if (z+1 <  64 && map[x][y][z+1]==0) return 1;
-   return 0;
+    int r = 0;
+   if (map[x][y][z]==0) r = 0;
+   else if (z == 0) { 
+       //printf("<c>");
+        r = 1;
+   }
+   else if (x   >   0 && map[x-1][y][z]==0) { 
+       //printf("<d>");
+        r = 1;
+   }
+   else if (x+1 < 512 && map[x+1][y][z]==0) { 
+       //printf("<e>");
+        r = 1;
+   }
+   else if (y   >   0 && map[x][y-1][z]==0) { 
+       //printf("<f>");
+        r = 1;
+   }
+   else if (y+1 < 512 && map[x][y+1][z]==0) {
+       //printf("<g>"); 
+        r = 1;
+   }
+   else if (z   >   0 && map[x][y][z-1]==0) { 
+       //printf("<h>");
+        r = 1;
+   }
+   else if (z+1 <  64 && map[x][y][z+1]==0) { 
+       //printf("<i>");
+        r = 1;
+   }
+   else { 
+       //printf("<j>");
+        r = 0;
+   }
+   
+
+    //printf("(%d,%d,%d):<%d> ", x,y,z, r);
+    return r;
 }
 
-static void write_color(FILE *f, uint32_t color)
-{
-    uint8_t c[4];
-    memcpy(c, &color, 4);
-    fputc(c[2], f);
-    fputc(c[1], f);
-    fputc(c[0], f);
-    fputc(c[3], f);
-}
 
 #define MAP_Z  64
-void write_map(const char *filename,
+static int write_map(const char *filename,
                uint8_t map[512][512][64],
                uint32_t color[512][512][64])
-{
-    int i,j,k;
+{        
     FILE *f = fopen(filename, "wb");
-
+    int i,j,k;
     for (j = 0; j < 512; ++j) {
         for (i=0; i < 512; ++i) {
+            /*if (!map[i][j][MAP_Z-1]) {
+                    LOG_E("Cannot write to .vxl an object without water level: %d %d %d\n", i, j, MAP_Z);
+                    fclose(f);
+                    return ERR_EXPORT_VXL_NO_WATER;
+                }8*/
             k = 0;
+			
             while (k < MAP_Z) {
-                int z;
-                int air_start;
-                int top_colors_start;
-                int top_colors_end; // exclusive
-                int bottom_colors_start;
-                int bottom_colors_end; // exclusive
-                int top_colors_len;
-                int bottom_colors_len;
-                int colors;
+                int N = 0;
+                int air = -1;
+                int top_start = -1;
+                int top_end = -1;
+                int bottom_start = -1;
+                int bottom_end = -1;
+                
 
                 // find the air region
-                air_start = k;
+                air = k;
                 while (k < MAP_Z && !map[i][j][k])
+                {
                     ++k;
-
-                // find the top region
-                top_colors_start = k;
-                while (k < MAP_Z && is_surface(i,j,k,map))
-                    ++k;
-                top_colors_end = k;
-
-                // now skip past the solid voxels
-                while (k < MAP_Z && map[i][j][k] && !is_surface(i,j,k,map))
-                    ++k;
-
-                // at the end of the solid voxels, we have colored voxels.
-                // in the "normal" case they're bottom colors; but it's
-                // possible to have air-color-solid-color-solid-color-air,
-                // which we encode as air-color-solid-0, 0-color-solid-air
-
-                // so figure out if we have any bottom colors at this point
-                bottom_colors_start = k;
-
-                z = k;
-                while (z < MAP_Z && is_surface(i,j,z,map))
-                    ++z;
-
-                if (z == MAP_Z || 0)
-                    ; // in this case, the bottom colors of this span are
-                      // empty, because we'l emit as top colors
-                else {
-                    // otherwise, these are real bottom colors so we can write
-                    // them
-                    while (is_surface(i,j,k,map))
-                        ++k;
                 }
-                bottom_colors_end = k;
+                
+                // find top start&end and the next air
+                
+                
+                
+                
+                top_start = k;
+                
+                
+                if (!is_surface(i,j,k,map)) {
+                    top_end = k-1;
+                }
+                else {                
+                    if (k < MAP_Z) {
+                        while (k < MAP_Z && map[i][j][k] && is_surface(i,j,k,map)) {
+                            k++;
+                            N++;
+                        }
+                        top_end = k-1;
+                    }
+                }
+                    
+                if (k < MAP_Z) {
+                    while (k < MAP_Z && map[i][j][k] && !is_surface(i,j,k,map)) {
+                        k++;
+                    }
+                    bottom_start = k;
+                }
+                
+                if (k < MAP_Z) {
+                    while (k < MAP_Z && map[i][j][k] && is_surface(i,j,k,map)) {
+                        k++;
+                        N++;
+                    }
+                    bottom_end = k-1;
+                }
+                
+                
+                if (k == MAP_Z) {
+                    fputc(0,f);
+                }
+                else {
+                    fputc(1+N,f);
+                }
 
-                // now we're ready to write a span
-                top_colors_len    = top_colors_end    - top_colors_start;
-                bottom_colors_len = bottom_colors_end - bottom_colors_start;
+                fputc(top_start, f);
+                fputc(top_end, f);
+                fputc(air, f);
 
-                colors = top_colors_len + bottom_colors_len;
-
-                if (k == MAP_Z)
-                    fputc(0,f); // last span
-                else
-                    fputc(colors+1, f);
-
-                fputc(top_colors_start, f);
-                fputc(top_colors_end-1, f);
-                fputc(air_start, f);
-
-                for (z=0; z < top_colors_len; ++z)
-                    write_color(f, color[i][j][top_colors_start + z]);
-                for (z=0; z < bottom_colors_len; ++z)
-                    write_color(f, color[i][j][bottom_colors_start + z]);
+                if (top_start <= top_end) {
+                    for (int z = top_start; z <= top_end; ++z) {
+                        uint8_t c[4];
+                        memcpy(c, &color[i][j][z], 4);
+                        fputc(c[2],f);
+                        fputc(c[1],f);
+                        fputc(c[0],f);
+                        fputc(c[3],f);
+                    };
+                }
+                if (bottom_start != -1) {
+                    for (int z = bottom_start; z <= bottom_end; ++z) {
+                        uint8_t c[4];
+                        memcpy(c, &color[i][j][z], 4);
+                        fputc(c[2],f);
+                        fputc(c[1],f);
+                        fputc(c[0],f);
+                        fputc(c[3],f);
+                    };
+                }
             }
+            
         }
     }
     fclose(f);
+    return 0;
 }
 
 static int export_as_vxl(const image_t *image, const char *path)
@@ -247,24 +290,65 @@ static int export_as_vxl(const image_t *image, const char *path)
     mesh_iterator_t iter = {0};
     uint8_t c[4];
     int x, y, z, pos[3];
-    assert(path);
-
+    assert(path);    
+    /* Now we want to know the origin coordinates and the width-height-depth
+    of the bounding box to determine which piece of model needs to be stored as map.
+    The bounding box, a.k.a. bbox, one of which corners coincides with the origin
+    of the coordinate system, can be seen in the editor as three blue cutting planes 
+    joined together.
+    
+    The code of the origin of the coordinates was taken from the function gui_bbox()
+    from the file \src\gui.cpp. 
+    
+    #TODO: throw exceptions when the bounding box has width and depth != 516 and 
+    height > 64.*/
+    
+    int xbbox, ybbox, zbbox, w, h, d;
+    image_t *image1 = goxel.image;
+    float (*box)[4][4] = &image1->box;
+    w = (*box)[0][0] * 2;
+    h = (*box)[1][1] * 2;
+    d = (*box)[2][2] * 2;
+    
+    if (w != 512) return ERR_EXPORT_VXL_WIDTH;
+    if (h != 512) return ERR_EXPORT_VXL_HEIGHT;
+    if (d > 64) return ERR_EXPORT_VXL_DEPTH;
+    
+    xbbox = round((*box)[3][0] - (*box)[0][0]);
+    ybbox = round((*box)[3][1] - (*box)[1][1]);
+    zbbox = round((*box)[3][2] - (*box)[2][2]);
+    
     map = calloc(1, sizeof(*map));
     color = calloc(1, sizeof(*color));
+    
     for (z = 0; z < 64; z++)
     for (y = 0; y < 512; y++)
     for (x = 0; x < 512; x++) {
-        pos[0] = 256 - x;
+        /* The original expression for the coordinates (pos[i]) of each voxel was 
+        bound to the coordinates of the origin (256, 256, 32), which in fact forced
+        users to put the origin of the coordinates (i.e. the bbox) at the 
+        (-256,-256,-32):
+        
+        pos[0] = 255 - x;
         pos[1] = y - 256;
         pos[2] = 31 - z;
+        */        
+        pos[0] = xbbox + (512 - x);
+        pos[1] = ybbox + y;
+        pos[2] = zbbox + 64 -1 - z;
+        
         mesh_get_at(mesh, &iter, pos, c);
-        if (c[3] <= 127) continue;
-        (*map)[x][y][z] = 1;
         memcpy(&((*color)[x][y][z]), c, 4);
+        
+        if (c[3] == 0) continue;
+        (*map)[x][y][z] = 1;
     }
-    write_map(path, *map, *color);
+    int res = write_map(path, *map, *color);
+    
     free(map);
     free(color);
+    
+    if (res) return res;
     return 0;
 }
 

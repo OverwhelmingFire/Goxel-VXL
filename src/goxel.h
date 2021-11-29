@@ -33,6 +33,7 @@
 #include "assets.h"
 #include "block_def.h"
 #include "camera.h"
+#include "error_types.h"
 #include "gesture.h"
 #include "gesture3d.h"
 #include "gui.h"
