@@ -1,7 +1,7 @@
+_Read this in other languages:_ [Русский](README.ru.md)
 
 :uk: :us: The father project: Goxel
 =====
-_Read this in other languages:_ [Русский](README.ru.md)
 
 Version 0.10.7
 
