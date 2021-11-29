@@ -1,4 +1,4 @@
-_Read this in other languages:_ [Русский](README.ru.md)
+_Read this in other languages:_ [Русский](README.ru.md) [Engish](README.md)
 
 :uk: :us: The father project: Goxel
 =====
