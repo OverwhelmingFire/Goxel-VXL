@@ -1,4 +1,4 @@
-_Read this in other languages:_ [Русский](README.ru.md)
+_Read this in other languages:_ [Русский](README.ru.md) [English](README.md)
 
 :ru: Родительский проект: Goxel
 =====
@@ -12,7 +12,7 @@ _Read this in other languages:_ [Русский](README.ru.md)
     https://travis-ci.org/guillaumechereau/goxel)
 [![DebianBadge](https://badges.debian.net/badges/debian/unstable/goxel/version.svg)](https://packages.debian.org/unstable/goxel)
 
-Официальый веб-сайт: https://goxel.xyz
+Официальный веб-сайт: https://goxel.xyz
 
 О проекте
 -----
